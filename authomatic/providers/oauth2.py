@@ -34,16 +34,17 @@ import datetime
 import json
 import logging
 
-from authomatic.six.moves.urllib.parse import unquote
+import authomatic.core as core
 from authomatic import providers
 from authomatic.exceptions import CancellationError, FailureError, OAuth2Error
-import authomatic.core as core
+from authomatic.six.moves.urllib.parse import unquote
 
+from . import managetoken
 
 __all__ = ['OAuth2', 'Amazon', 'Behance', 'Bitly', 'Cosm', 'DeviantART',
            'Eventbrite', 'Facebook', 'Foursquare', 'GitHub', 'Google',
            'LinkedIn', 'PayPal', 'Reddit', 'Viadeo', 'VK', 'WindowsLive',
-           'Yammer', 'Yandex']
+           'Yammer', 'Yandex', 'AzureAD']
 
 
 class OAuth2(providers.AuthorizationProvider):
@@ -1983,6 +1984,76 @@ class Yandex(OAuth2):
 
         return user
 
+class AzureAD(OAuth2):
+    """
+    AzureAD |oauth2| provider.
+
+    * Dashboard:
+    * Docs:
+    * API explorer:
+
+    Supported :class:`.User` properties:
+
+    * email
+    * first_name
+    * id
+    * last_name
+    * link
+    * locale
+    * name
+    * picture
+
+    Unsupported :class:`.User` properties:
+
+    * birth_date
+    * city
+    * country
+    * gender
+    * nickname
+    * location
+    * phone
+    * postal_code
+    * timezone
+    * username
+
+    """
+
+    user_authorization_url = 'https://login.microsoftonline.com/c11d97ee-d3d1-434d-b3a7-a35fb5af1cf8/oauth2/v2.0/authorize'
+    access_token_url = 'https://login.microsoftonline.com/c11d97ee-d3d1-434d-b3a7-a35fb5af1cf8/oauth2/v2.0/token'
+    #user_info_url = 'https://apis.live.net/v5.0/me'
+
+    #user_info_scope = ['wl.basic', 'wl.emails', 'wl.photos']
+
+    supported_user_attributes = core.SupportedUserAttributes(
+        email=True,
+        id=True,
+        name=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(AzureAD, self).__init__(*args, **kwargs)
+
+        if self.offline:
+            if 'wl.offline_access' not in self.scope:
+                self.scope.append  ('wl.offline_access')
+
+    @classmethod
+    def _x_credentials_parser(cls, credentials, data):
+        if data.get('token_type') == 'bearer':
+            credentials.token_type = cls.BEARER
+        return credentials
+
+    @staticmethod
+    def _x_user_parser(user, data):
+
+        valid_audiences = ['61ccd3ed-f908-437f-82a3-7235e3275be0']
+        issuer = 'https://login.microsoftonline.com/c11d97ee-d3d1-434d-b3a7-a35fb5af1cf8/v2.0'
+        # import pdb; pdb.set_trace()
+        decoded_token = managetoken.decode_jwt(user,data, valid_audiences, issuer)
+        user.email = decoded_token['email']
+        user.name = decoded_token['name']
+        user.id = decoded_token['oid']
+        return user
 
 # The provider type ID is generated from this list's indexes!
 # Always append new providers at the end so that ids of existing providers
@@ -2007,4 +2078,5 @@ PROVIDER_ID_MAP = [
     WindowsLive,
     Yammer,
     Yandex,
+    AzureAD,
 ]
