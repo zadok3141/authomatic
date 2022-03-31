@@ -2018,8 +2018,8 @@ class AzureAD(OAuth2):
 
     """
 
-    user_authorization_url = 'https://login.microsoftonline.com/c11d97ee-d3d1-434d-b3a7-a35fb5af1cf8/oauth2/v2.0/authorize'
-    access_token_url = 'https://login.microsoftonline.com/c11d97ee-d3d1-434d-b3a7-a35fb5af1cf8/oauth2/v2.0/token'
+    user_authorization_url = 'https://login.microsoftonline.com/8d182cbe-9d0a-40fe-8f0b-358746b53a2/oauth2/v2.0/authorize'
+    access_token_url = 'https://login.microsoftonline.com/8d182cbe-9d0a-40fe-8f0b-358746b53a2/oauth2/v2.0/token'
     #user_info_url = 'https://apis.live.net/v5.0/me'
 
     #user_info_scope = ['wl.basic', 'wl.emails', 'wl.photos']
@@ -2046,8 +2046,8 @@ class AzureAD(OAuth2):
     @staticmethod
     def _x_user_parser(user, data):
 
-        valid_audiences = ['61ccd3ed-f908-437f-82a3-7235e3275be0']
-        issuer = 'https://login.microsoftonline.com/c11d97ee-d3d1-434d-b3a7-a35fb5af1cf8/v2.0'
+        valid_audiences = ['af82af41-b740-485f-b548-38733027b0d']
+        issuer = 'https://login.microsoftonline.com/8d182cbe-9d0a-40fe-8f0b-358746b53a25'
         # import pdb; pdb.set_trace()
         decoded_token = managetoken.decode_jwt(user,data, valid_audiences, issuer)
         user.email = decoded_token['email']
