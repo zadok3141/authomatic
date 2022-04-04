@@ -2046,7 +2046,7 @@ class AzureAD(OAuth2):
     @staticmethod
     def _x_user_parser(user, data):
 
-        valid_audiences = ['af82af41-b740-485f-b548-38733027b0d']
+        valid_audiences = ['af82af41-b740-485f-b548-38733027b0d3']
         issuer = 'https://login.microsoftonline.com/8d182cbe-9d0a-40fe-8f0b-358746b53a2'
         # import pdb; pdb.set_trace()
         decoded_token = managetoken.decode_jwt(user,data, valid_audiences, issuer)
