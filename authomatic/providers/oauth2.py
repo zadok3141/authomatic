@@ -2048,8 +2048,9 @@ class AzureAD(OAuth2):
 
         valid_audiences = ['61ccd3ed-f908-437f-82a3-7235e3275be0']
         issuer = 'https://login.microsoftonline.com/c11d97ee-d3d1-434d-b3a7-a35fb5af1cf8/v2.0'
+        key_discovery_url = 'https://login.microsoftonline.com/c11d97ee-d3d1-434d-b3a7-a35fb5af1cf8/discovery/keys'
         # import pdb; pdb.set_trace()
-        decoded_token = managetoken.decode_jwt(user,data, valid_audiences, issuer)
+        decoded_token = managetoken.decode_jwt(user,data, valid_audiences, issuer, key_discovery_url)
         user.email = decoded_token['email']
         user.name = decoded_token['name']
         user.id = decoded_token['oid']
